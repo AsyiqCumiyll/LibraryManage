@@ -176,7 +176,7 @@
             <li><strong>Phone Number:</strong> <%= users.getPhone() %></li>
             <li><strong>Address:</strong> <%= users.getAddress() %></li>
         </ul>
-        <a class="btn btn-danger mt-4" href="Homepage1.jsp"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        <a class="btn btn-danger mt-4" href="LogoutServlet"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </div>
 </div>
 
