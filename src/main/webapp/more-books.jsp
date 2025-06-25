@@ -255,15 +255,15 @@
                         Statement stmt = null;
                         ResultSet rs = null;
 
+                        String DB_URL = System.getenv("DB_URL");
+                        String DB_USER = System.getenv("DB_USER");
+                        String DB_PASSWORD = System.getenv("DB_PASSWORD");
+
                         try {
                             Class.forName("com.mysql.cj.jdbc.Driver");
 
-                            String DB_URL = System.getenv("DB_URL");
-                            String DB_USER = System.getenv("DB_USER");
-                            String DB_PASSWORD = System.getenv("DB_PASSWORD");
-
                             if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
-                                out.println("<p>Database configuration is missing.</p>");
+                                out.println("<p>Database configuration environment variables are missing.</p>");
                                 return;
                             }
 
@@ -281,33 +281,48 @@
                         <td><%= rs.getDate("datePublished")%></td>
                         <td><%= rs.getString("synopsis")%></td>
                         <td>
-                            <a href="edit-form.jsp?bookid=<%= bookid%>" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="DeleteBookServlet?bookid=<%= bookid%>" class="btn btn-danger btn-sm"
-                               onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+                            <form action="BorrowConfirmation.jsp" method="post" style="display:inline;">
+                                <input type="hidden" name="bookid" value="<%= bookid%>">
+                                <%
+                                    int userid = 0;
+                                    if (users != null) {
+                                        userid = users.getUserid(); // or getId(), based on your method
+                                    } else if (staff != null) {
+                                        userid = staff.getStaffid(); // or getId()
+                                    } else {
+                                        response.sendRedirect("login.jsp"); // not logged in
+                                        return;
+                                    }
+                                %>
+
+                                <input type="hidden" name="userid" value="<%= userid%>">
+
+                                <button type="submit" class="btn btn-success btn-sm">Borrow</button>
+                            </form>
                         </td>
                     </tr>
                     <%
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            out.println("<tr><td colspan='6'>Error: " + e.getMessage() + "</td></tr>");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    %>
+                    <tr><td colspan="6" class="text-danger">Error loading books: <%= e.getMessage()%></td></tr>
+                    <%
                         } finally {
-                            try {
-                                if (rs != null) {
-                                    rs.close();
-                                }
-                                if (stmt != null) {
-                                    stmt.close();
-                                }
-                                if (conn != null) {
-                                    conn.close();
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
+                            if (rs != null) try {
+                                rs.close();
+                            } catch (Exception e) {
+                            }
+                            if (stmt != null) try {
+                                stmt.close();
+                            } catch (Exception e) {
+                            }
+                            if (conn != null) try {
+                                conn.close();
+                            } catch (Exception e) {
                             }
                         }
                     %>
-
                 </tbody>
             </table>
         </div>
