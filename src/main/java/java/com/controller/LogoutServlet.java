@@ -4,6 +4,8 @@
  */
 package java.com.controller;
 
+ 
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -14,12 +16,11 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false); // Get existing session
-        if (session != null) {
-            session.invalidate(); // Terminates the session
-        }
+        HttpSession session = request.getSession();
+session.setAttribute("logoutSuccess", "You have successfully logged out.");
+response.sendRedirect("Homepage1.jsp");
 
         // Redirect to homepage or login page
-        response.sendRedirect("Homepage1.jsp");
+     
     }
 }

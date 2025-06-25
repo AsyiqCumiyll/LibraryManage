@@ -111,13 +111,16 @@
 </head>
 <body>
 
+<%@ page session="true" %>
 <%
-    User users = (User) session.getAttribute("user");
-
-    if (users == null) {
-        response.sendRedirect("login.jsp");
+    if (session == null || session.getAttribute("username") == null) {
+        response.sendRedirect("LogoutServlet");
         return;
     }
+
+    response.setHeader("Cache-Control","no-cache,no-store,must-revalidate");
+    response.setHeader("Pragma","no-cache");
+    response.setDateHeader ("Expires", 0);
 %>
 
     <!-- Header -->
