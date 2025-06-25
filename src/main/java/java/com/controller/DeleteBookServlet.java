@@ -1,6 +1,6 @@
 package com.controller;
 
-import java.com.util.DBConnection;
+import com.util.DBConnection;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

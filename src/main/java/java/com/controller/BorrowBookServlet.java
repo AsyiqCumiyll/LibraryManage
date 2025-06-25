@@ -4,7 +4,7 @@
  */
 package com.controller;
 
-import java.com.util.DBConnection;
+import com.util.DBConnection;
 import java.io.IOException;
 import java.sql.*;
 import javax.servlet.*;
