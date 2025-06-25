@@ -210,14 +210,16 @@
 <div class="form-container">
     <form action="register" method="post">
 
+      
+
         <label for="username"><b>Full Name</b></label>
-        <input type="text" placeholder="Enter Full Name" name="username" id="username" required>
+        <input type="text" placeholder="Enter Full Name" name="username" id="username" required autocomplete="name">
 
         <label for="email"><b>Email</b></label>
-        <input type="email" placeholder="Enter Email" name="email" id="email" required>
+        <input type="email" placeholder="Enter Email" name="email" id="email" required autocomplete="email">
 
         <label for="phone"><b>Phone</b></label>
-        <input type="text" placeholder="Enter Phone Number" name="phone" id="phone" required>
+        <input type="text" placeholder="Enter Phone Number" name="phone" id="phone" required pattern="[0-9]{10,15}" title="Enter a valid phone number">
 
         <label for="address"><b>Address</b></label>
         <input type="text" placeholder="Enter Address" name="address" id="address" required>
@@ -229,6 +231,7 @@
 
     </form>
 </div>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
