@@ -242,7 +242,7 @@
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-success">Save Book</button>
                     <div>
-                        <a href="BookCollection.jsp" class="btn btn-secondary">Back</a>
+                        <a href="Staff-Book-Collection.jsp" class="btn btn-secondary">Back</a>
                         <a href="book-listing.jsp" class="btn btn-warning">Edit Book</a>
                     </div>
                 </div>

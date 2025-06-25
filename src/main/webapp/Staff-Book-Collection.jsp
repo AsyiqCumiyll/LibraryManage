@@ -306,7 +306,7 @@
             <% if (staff != null) { %>
                 <button id="editButton" class="btn btn-danger">Edit Book</button>
             <% } %>
-            <a href="more-books.jsp" class="btn btn-primary ms-2">More Books</a>
+            <a href="Staff-more-books.jsp" class="btn btn-primary ms-2">More Books</a>
         </div>
     </div>
 
