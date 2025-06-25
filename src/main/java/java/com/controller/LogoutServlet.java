@@ -1,10 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package java.com.controller;
-
  
+package com.controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,11 +11,11 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-session.setAttribute("logoutSuccess", "You have successfully logged out.");
-response.sendRedirect("Homepage1.jsp");
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate(); // Destroy session
+        }
 
-        // Redirect to homepage or login page
-     
+        response.sendRedirect("Homepage1.jsp"); // Redirect to homepage or login
     }
 }
