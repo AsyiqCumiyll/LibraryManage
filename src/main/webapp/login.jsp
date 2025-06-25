@@ -316,8 +316,8 @@
 
 <div class="login-container">
     <form action="LoginServlet" method="post">
-        <label for="userid"><b>User ID</b></label>
-        <input id="userid" type="text" placeholder="Enter User ID" name="userid" required>
+        <label for="email"><b>Email</b></label>
+        <input id="email" type="text" placeholder="Enter User email" name="email" required>
 
         <label for="password"><b>Password</b></label>
         <input id="password" type="password" placeholder="Enter Password" name="password" required>
