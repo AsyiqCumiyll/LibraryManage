@@ -17,13 +17,12 @@
     </properties>
 
     <dependencies>
-        <!-- ✅ MySQL Connector -->
+        <!-- ✅ MySQL Connector (correct version and group/artifact) -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.3.0</version>
         </dependency>
-
 
         <!-- JSTL, Servlet & JSP -->
         <dependency>
@@ -78,22 +77,8 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ Shade Plugin (Move inside plugins!) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- ✅ Shade Plugin (usually not needed for WAR, more useful for JARs) -->
+            <!-- You can remove this if not creating a fat WAR with embedded dependencies -->
         </plugins>
     </build>
-
-
 </project>
