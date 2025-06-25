@@ -12,14 +12,11 @@ public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
- // Database connection info using environment variables with fallback defaults
-private String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-private String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-private String dbName = System.getenv().getOrDefault("DB_NAME", "library");
-private String jdbcUsername = System.getenv().getOrDefault("DB_USER", "root");
-private String jdbcPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
+   // Correct environment variable usage
+    private static final String DB_URL      = System.getenv("DB_URL");      // Should be full JDBC URL: jdbc:mysql://host:port/dbname
+    private static final String DB_USER     = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
-private String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,7 +31,7 @@ private String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            con = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+            con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
             String sql = "SELECT * FROM users WHERE userid = ? AND password = ?";
             pst = con.prepareStatement(sql);
