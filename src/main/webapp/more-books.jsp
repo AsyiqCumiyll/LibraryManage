@@ -249,6 +249,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <%@ page import="java.sql.*" %>
                     <%
                         Connection conn = null;
                         Statement stmt = null;
@@ -257,22 +258,22 @@
                         try {
                             Class.forName("com.mysql.cj.jdbc.Driver");
 
-                            String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-                            String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-                            String dbName = System.getenv().getOrDefault("DB_NAME", "library");
-                            String dbUser = System.getenv().getOrDefault("DB_USER", "root");
-                            String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
+                            String DB_URL = System.getenv("DB_URL");
+                            String DB_USER = System.getenv("DB_USER");
+                            String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
-                            String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
+                            if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
+                                out.println("<p>Database configuration is missing.</p>");
+                                return;
+                            }
 
-                            conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
+                            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                             stmt = conn.createStatement();
                             rs = stmt.executeQuery("SELECT * FROM book");
 
                             while (rs.next()) {
                                 int bookid = rs.getInt("bookid");
                     %>
-
                     <tr>
                         <td><%= bookid%></td>
                         <td><%= rs.getString("bookTitle")%></td>
@@ -280,48 +281,33 @@
                         <td><%= rs.getDate("datePublished")%></td>
                         <td><%= rs.getString("synopsis")%></td>
                         <td>
-                            <form action="BorrowConfirmation.jsp" method="post" style="display:inline;">
-                                <input type="hidden" name="bookid" value="<%= bookid%>">
-                                <%
-                                    int userid = 0;
-                                    if (users != null) {
-                                        userid = users.getUserid(); // or getId(), based on your method
-                                    } else if (staff != null) {
-                                        userid = staff.getStaffid(); // or getId()
-                                    } else {
-                                        response.sendRedirect("login.jsp"); // not logged in
-                                        return;
-                                    }
-                                %>
-
-                                <input type="hidden" name="userid" value="<%= userid%>">
-
-                                <button type="submit" class="btn btn-success btn-sm">Borrow</button>
-                            </form>
+                            <a href="edit-form.jsp?bookid=<%= bookid%>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="DeleteBookServlet?bookid=<%= bookid%>" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
                         </td>
                     </tr>
                     <%
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    %>
-                    <tr><td colspan="6" class="text-danger">Error loading books: <%= e.getMessage()%></td></tr>
-                    <%
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            out.println("<tr><td colspan='6'>Error: " + e.getMessage() + "</td></tr>");
                         } finally {
-                            if (rs != null) try {
-                                rs.close();
-                            } catch (Exception e) {
-                            }
-                            if (stmt != null) try {
-                                stmt.close();
-                            } catch (Exception e) {
-                            }
-                            if (conn != null) try {
-                                conn.close();
-                            } catch (Exception e) {
+                            try {
+                                if (rs != null) {
+                                    rs.close();
+                                }
+                                if (stmt != null) {
+                                    stmt.close();
+                                }
+                                if (conn != null) {
+                                    conn.close();
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
                         }
                     %>
+
                 </tbody>
             </table>
         </div>

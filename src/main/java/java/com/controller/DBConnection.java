@@ -10,14 +10,9 @@ import java.sql.SQLException;
     private static Connection myConnection = null;
 
     // Get DB info from environment variables or fallback to default values
-    private static final String DB_HOST = System.getenv().getOrDefault("DB_HOST", "localhost");
-    private static final String DB_PORT = System.getenv().getOrDefault("DB_PORT", "3306");
-    private static final String DB_NAME = System.getenv().getOrDefault("DB_NAME", "library_man");
-    private static final String DB_USER = System.getenv().getOrDefault("DB_USER", "root");
-    private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
-
-    private static final String URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME;
-
+   private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
     private DBConnection() {} // prevent instantiation
 
 

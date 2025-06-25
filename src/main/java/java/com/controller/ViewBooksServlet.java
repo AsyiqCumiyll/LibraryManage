@@ -1,21 +1,27 @@
 package com.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.*;
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.*;
 
 @WebServlet("/ViewBooksServlet")
 public class ViewBooksServlet extends HttpServlet {
+    
+    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
-        // HTML Table Header
+        // HTML table header
         out.println("<html><head><title>Book Table</title></head><body>");
         out.println("<h2>Book Records</h2>");
         out.println("<table border='1' cellpadding='10'>");
@@ -23,29 +29,19 @@ public class ViewBooksServlet extends HttpServlet {
         out.println("<th>bookId</th><th>bookTitle</th><th>bookAuthor</th><th>datePublished</th><th>synopsis</th>");
         out.println("</tr>");
 
-        try {
-    // Load MySQL JDBC driver
-    Class.forName("com.mysql.cj.jdbc.Driver");
+        // Check if environment variables are set
+        if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
+            out.println("<p>Error: Database environment variables not set.</p>");
+            return;
+        }
 
-    // Load DB values from environment variables or use defaults
-    String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-    String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-    String dbName = System.getenv().getOrDefault("DB_NAME", "library");
-    String dbUser = System.getenv().getOrDefault("DB_USER", "root");
-    String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM book")) {
 
-    // Build the JDBC URL
-    String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-    // Establish the connection
-    Connection conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
-
-    // Now you can use `conn` as usual
-
-            String query = "SELECT * FROM book";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
+            // Print each book record
             while (rs.next()) {
                 out.println("<tr>");
                 out.println("<td>" + rs.getInt("bookid") + "</td>");
@@ -56,16 +52,12 @@ public class ViewBooksServlet extends HttpServlet {
                 out.println("</tr>");
             }
 
-            out.println("</table>");
-            out.println("</body></html>");
-
-            rs.close();
-            stmt.close();
-            conn.close();
         } catch (Exception e) {
             out.println("<p>Error: " + e.getMessage() + "</p>");
         }
 
+        out.println("</table>");
+        out.println("</body></html>");
         out.close();
     }
 }

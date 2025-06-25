@@ -108,21 +108,21 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <%@ page import="java.sql.*" %>
                     <%
+                        Connection conn = null;
+                        Statement stmt = null;
+                        ResultSet rs = null;
+
+                        String DB_URL = System.getenv("DB_URL");
+                        String DB_USER = System.getenv("DB_USER");
+                        String DB_PASSWORD = System.getenv("DB_PASSWORD");
+
                         try {
                             Class.forName("com.mysql.cj.jdbc.Driver");
-
-                            String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-                            String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-                            String dbName = System.getenv().getOrDefault("DB_NAME", "library");
-                            String dbUser = System.getenv().getOrDefault("DB_USER", "root");
-                            String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
-
-                            String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
-
-                            Connection conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
-                            Statement stmt = conn.createStatement();
-                            ResultSet rs = stmt.executeQuery("SELECT * FROM book");
+                            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                            stmt = conn.createStatement();
+                            rs = stmt.executeQuery("SELECT * FROM book");
 
                             while (rs.next()) {
                     %>
@@ -139,12 +139,29 @@
                         </td>
                     </tr>
                     <%
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    %>
+                    <tr><td colspan="6">Error: <%= e.getMessage()%></td></tr>
+                    <%
+                        } finally {
+                            try {
+                                if (rs != null) {
+                                    rs.close();
+                                }
+                                if (stmt != null) {
+                                    stmt.close();
+                                }
+                                if (conn != null) {
+                                    conn.close();
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            conn.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     %>
+
                 </tbody>
             </table>
 

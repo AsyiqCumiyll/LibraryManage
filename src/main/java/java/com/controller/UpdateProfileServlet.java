@@ -16,13 +16,9 @@ public class UpdateProfileServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 // Database connection info using environment variables with fallback defaults
-    private String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-    private String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-    private String dbName = System.getenv().getOrDefault("DB_NAME", "library");
-    private String jdbcUsername = System.getenv().getOrDefault("DB_USER", "root");
-    private String jdbcPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
-
-    private String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
+  private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userid = request.getParameter("userid");
@@ -36,7 +32,7 @@ public class UpdateProfileServlet extends HttpServlet {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+            con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
             String sql = "UPDATE users SET username = ?, email = ?, phone = ?, address = ? WHERE userid = ?";
             pst = con.prepareStatement(sql);

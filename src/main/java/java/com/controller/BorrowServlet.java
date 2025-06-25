@@ -1,65 +1,55 @@
 package com.controller;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
+import java.io.IOException;
+import java.sql.*;
 
 @WebServlet("/BorrowServlet")
 public class BorrowServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    // Fungsi untuk handle POST request
+    // ✅ Environment variables for DB
+    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_USER = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         try {
-            // Debug: Papar data yang diterima
+            // Debug output
             System.out.println("bookid: " + request.getParameter("bookid"));
             System.out.println("userid: " + request.getParameter("userid"));
 
-            // Dapatkan parameter dari borang
+            // Parse parameters
             int bookid = Integer.parseInt(request.getParameter("bookid"));
             int userid = Integer.parseInt(request.getParameter("userid"));
 
-            // Sambungan ke database
-            String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-            String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-            String dbName = System.getenv().getOrDefault("DB_NAME", "library_man");
-            String dbUser = System.getenv().getOrDefault("DB_USER", "root");
-            String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
-
-            String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
-            Connection conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
-
-            // Pastikan sambungan berjaya
-            if (conn == null) {
-                response.getWriter().println("Database connection failed.");
+            // Validate DB config
+            if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
+                response.getWriter().println("Database configuration missing.");
                 return;
             }
 
-            // Query insert
-            String sql = "INSERT INTO borrow (bookid, userid) VALUES (?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, bookid);
-            stmt.setInt(2, userid);
+            // Load driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Jalankan query
-            int rowsAffected = stmt.executeUpdate();
+            // Use try-with-resources for safe connection handling
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement("INSERT INTO borrow (bookid, userid) VALUES (?, ?)")) {
 
-            // Debug: Check jika berjaya insert
-            System.out.println("Rows affected: " + rowsAffected);
+                stmt.setInt(1, bookid);
+                stmt.setInt(2, userid);
 
-            // Tutup connection
-            stmt.close();
-            conn.close();
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println("Rows affected: " + rowsAffected);
+            }
 
-            // Redirect selepas berjaya
+            // Redirect after success
             response.sendRedirect("more-books.jsp");
 
         } catch (Exception e) {
