@@ -6,7 +6,7 @@ package com.controller;
  */
 
 import com.Model.BorrowRecord;
-import com.util.DBConnection;
+import java.com.util.DBConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;

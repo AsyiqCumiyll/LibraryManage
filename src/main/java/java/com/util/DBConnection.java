@@ -1,31 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.util;
+package java.com.util;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.*;
 
- 
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 public class DBConnection {
-    private static final String DB_HOST = System.getenv().getOrDefault("DB_HOST", "localhost");
-    private static final String DB_PORT = System.getenv().getOrDefault("DB_PORT", "3306");
-    private static final String DB_NAME = System.getenv().getOrDefault("DB_NAME", "library_man");
-    private static final String DB_USER = System.getenv().getOrDefault("DB_USER", "root");
-    private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
+    // Ambil tepat sama key yang kita set di Railway
+    private static final String URL      = System.getenv("DB_URL");
+    private static final String USER     = System.getenv("DB_USER");
+    private static final String PASSWORD = System.getenv("DB_PASSWORD");
 
-    private static final String URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME;
+    public static Connection getConnection() {
+        // Debug: tulis ke log untuk pastikan nilai tak null
+        System.out.println("? Connecting to DB_URL    = " + URL);
+        System.out.println("? Using DB_USER           = " + USER);
+        // (jangan log password)
 
-    public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace(); // better to log the error
+            System.err.println("MySQL JDBC Driver not found.");
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return DriverManager.getConnection(URL, DB_USER, DB_PASSWORD);
+
+        try {
+            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("? Database connection established.");
+            return conn;
+        } catch (SQLException e) {
+            System.err.println("? Failed to connect to database: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

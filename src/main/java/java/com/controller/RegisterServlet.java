@@ -11,14 +11,10 @@ public class RegisterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    // Database connection info using environment variables with fallback defaults
-    private String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
-    private String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-    private String dbName = System.getenv().getOrDefault("DB_NAME", "library_man");
-    private String jdbcUsername = System.getenv().getOrDefault("DB_USER", "root");
-    private String jdbcPassword = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
-
-    private String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
+    // Correct environment variable usage
+    private static final String DB_URL      = System.getenv("DB_URL");      // Should be full JDBC URL: jdbc:mysql://host:port/dbname
+    private static final String DB_USER     = System.getenv("DB_USER");
+    private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userid = request.getParameter("userid");
@@ -28,15 +24,14 @@ public class RegisterServlet extends HttpServlet {
         String address = request.getParameter("address");
         String password = request.getParameter("password");
 
-        Connection con = null;
-        PreparedStatement pst = null;
-
-        try {
+        try (
+            Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            PreparedStatement pst = con.prepareStatement(
+                "INSERT INTO users (userid, username, email, phone, address, password) VALUES (?, ?, ?, ?, ?, ?)"
+            )
+        ) {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
 
-            String sql = "INSERT INTO users (userid, username, email, phone, address, password) VALUES (?, ?, ?, ?, ?, ?)";
-            pst = con.prepareStatement(sql);
             pst.setString(1, userid);
             pst.setString(2, username);
             pst.setString(3, email);
@@ -54,18 +49,7 @@ public class RegisterServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().println("Error: " + e.getMessage());
-        } finally {
-            try {
-                if (pst != null) {
-                    pst.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            response.getWriter().println("<script>alert('Error: " + e.getMessage() + "'); window.location='register.jsp';</script>");
         }
     }
 }
