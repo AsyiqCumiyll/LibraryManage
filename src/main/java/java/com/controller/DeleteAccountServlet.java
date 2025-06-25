@@ -19,9 +19,9 @@ public class DeleteAccountServlet extends HttpServlet {
     // Database connection info using environment variables
     private String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
     private String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-    private String dbName = System.getenv().getOrDefault("DB_NAME", "library");
+    private String dbName = System.getenv().getOrDefault("DB_NAME", "library_man");
     private String jdbcUsername = System.getenv().getOrDefault("DB_USER", "root");
-    private String jdbcPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
+    private String jdbcPassword = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
 
     private String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
 

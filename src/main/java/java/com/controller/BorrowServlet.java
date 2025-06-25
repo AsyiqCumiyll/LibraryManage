@@ -30,9 +30,9 @@ public class BorrowServlet extends HttpServlet {
             // Sambungan ke database
             String dbHost = System.getenv().getOrDefault("DB_HOST", "localhost");
             String dbPort = System.getenv().getOrDefault("DB_PORT", "3306");
-            String dbName = System.getenv().getOrDefault("DB_NAME", "library");
+            String dbName = System.getenv().getOrDefault("DB_NAME", "library_man");
             String dbUser = System.getenv().getOrDefault("DB_USER", "root");
-            String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "admin");
+            String dbPassword = System.getenv().getOrDefault("DB_PASSWORD", "joeYYBcSQddIDVtKhDyjpDoRoGhHGPeE");
 
             String jdbcURL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
             Connection conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
