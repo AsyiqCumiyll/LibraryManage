@@ -1,82 +1,68 @@
 package com.controller;
 
 import com.Model.User;
-import java.io.IOException;
-import java.sql.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.io.IOException;
+import java.sql.*;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-   // Correct environment variable usage
-    private static final String DB_URL      = System.getenv("DB_URL");      // Should be full JDBC URL: jdbc:mysql://host:port/dbname
-    private static final String DB_USER     = System.getenv("DB_USER");
+    private static final String DB_URL = System.getenv("DB_URL");           // e.g., jdbc:mysql://host:port/dbname
+    private static final String DB_USER = System.getenv("DB_USER");
     private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
 
-
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Fail early if DB config is missing
+        if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database configuration missing.");
+            return;
+        }
 
         String userid = request.getParameter("userid");
         String password = request.getParameter("password");
 
-        Connection con = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
+        try (Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pst = con.prepareStatement("SELECT * FROM users WHERE userid = ? AND password = ?")) {
 
-        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-
-            String sql = "SELECT * FROM users WHERE userid = ? AND password = ?";
-            pst = con.prepareStatement(sql);
             pst.setString(1, userid);
             pst.setString(2, password);
 
-            rs = pst.executeQuery();
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setUserid(rs.getInt("userid"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setAddress(rs.getString("address"));
 
-            if (rs.next()) {
-                User users = new User();
-                users.setUserid(rs.getInt("userid"));
-                users.setUsername(rs.getString("username"));
-                users.setEmail(rs.getString("email"));
-                users.setPassword(rs.getString("password"));
-                users.setPhone(rs.getString("phone"));
-                users.setAddress(rs.getString("address"));
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", user);
 
-                HttpSession session = request.getSession();
-                session.setAttribute("user", users); // OR
-                Object staff = null;
-                session.setAttribute("staff", staff);
-
-                response.sendRedirect("Homepage2.jsp");
-
-            } else {
-                response.sendRedirect("login.jsp?error=Invalid credentials.");
+                    response.sendRedirect("Homepage2.jsp");
+                } else {
+                    response.sendRedirect("login.jsp?error=Invalid credentials.");
+                }
             }
 
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "JDBC Driver not found.");
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (pst != null) {
-                    pst.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (SQLException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
