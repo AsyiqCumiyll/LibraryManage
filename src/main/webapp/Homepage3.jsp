@@ -160,7 +160,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle white-text" href="#" role="button" data-bs-toggle="dropdown">Collection</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="BookCollection.jsp">Our Collection</a></li>
+                                    <li><a class="dropdown-item" href="Staff-Book-Collection.jsp">Our Collection</a></li>
                                 </ul>
                             </li>
                         </ul>
